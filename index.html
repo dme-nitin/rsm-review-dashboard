@@ -128,7 +128,7 @@
     <button class="refresh-btn" onclick="syncDashboard()">Refresh Data</button>
     <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
 </div>
-<div class="no-print" id="syncStatus">Loading…</div>
+<div class="no-print" id="syncStatus">Loadingâ€¦</div>
 
 <!-- RSM: DAYA -->
 <div class="container" id="daya">
@@ -192,7 +192,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC â€” leads = Rs 10L)</h3>
 
     <table>
         <tr>
@@ -203,7 +203,7 @@
             <th>Expected Close</th>
         </tr>
         <tbody data-pipeline="Daya">
-        <tr><td colspan="5">Loading…</td></tr>
+        <tr><td colspan="5">Loadingâ€¦</td></tr>
         </tbody>
     </table>
 
@@ -279,7 +279,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC â€” leads = Rs 10L)</h3>
 
     <table>
         <tr>
@@ -290,7 +290,7 @@
             <th>Expected Close</th>
         </tr>
         <tbody data-pipeline="Vijay">
-        <tr><td colspan="5">Loading…</td></tr>
+        <tr><td colspan="5">Loadingâ€¦</td></tr>
         </tbody>
     </table>
 
@@ -366,7 +366,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC â€” leads = Rs 10L)</h3>
 
     <table>
         <tr>
@@ -377,7 +377,7 @@
             <th>Expected Close</th>
         </tr>
         <tbody data-pipeline="Abhishek">
-        <tr><td colspan="5">Loading…</td></tr>
+        <tr><td colspan="5">Loadingâ€¦</td></tr>
         </tbody>
     </table>
 
@@ -453,7 +453,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC â€” leads = Rs 10L)</h3>
 
     <table>
         <tr>
@@ -464,7 +464,7 @@
             <th>Expected Close</th>
         </tr>
         <tbody data-pipeline="Tanmoy">
-        <tr><td colspan="5">Loading…</td></tr>
+        <tr><td colspan="5">Loadingâ€¦</td></tr>
         </tbody>
     </table>
 
@@ -540,7 +540,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC â€” leads = Rs 10L)</h3>
 
     <table>
         <tr>
@@ -551,7 +551,7 @@
             <th>Expected Close</th>
         </tr>
         <tbody data-pipeline="Giridharan">
-        <tr><td colspan="5">Loading…</td></tr>
+        <tr><td colspan="5">Loadingâ€¦</td></tr>
         </tbody>
     </table>
 
@@ -568,7 +568,7 @@
 
 <!-- CONSOLIDATED PAGE -->
 <div class="container" id="consolidated">
-    <h2>CONSOLIDATED ROLLUP — ALL TERRITORIES</h2>
+    <h2>CONSOLIDATED ROLLUP â€” ALL TERRITORIES</h2>
 
     <p><b>Week Ending:</b> <span class="input-line" contenteditable="true"></span></p>
 
@@ -732,7 +732,7 @@
                 // no Target/Achievement rows found at all for this RSM
                 setCell(name, 'targetAchievementPct', 'achievementPct', 'No data');
             } else if (r.targetAchievementPct === -1) {
-                // Target is 0 but Achievement is non-zero — can't divide by zero
+                // Target is 0 but Achievement is non-zero â€” can't divide by zero
                 setCell(name, 'targetAchievementPct', 'achievementPct', 'Target = 0');
             } else {
                 setCell(name, 'targetAchievementPct', 'achievementPct', r.targetAchievementPct + '%');
@@ -752,17 +752,17 @@
 
         document.getElementById('syncStatus').textContent =
             'Last synced ' + new Date(data.generatedAt).toLocaleString() +
-            ' — This week: ' + data.ranges.thisWeekStart + ' to ' + data.ranges.thisWeekEnd +
+            ' â€” This week: ' + data.ranges.thisWeekStart + ' to ' + data.ranges.thisWeekEnd +
             ' | Last week: ' + data.ranges.lastWeekStart + ' to ' + data.ranges.lastWeekEnd;
     }
 
     async function syncDashboard() {
         const statusEl = document.getElementById('syncStatus');
         if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') !== -1) {
-            statusEl.textContent = 'Not connected yet — paste your Apps Script Web App URL into APPS_SCRIPT_URL near the bottom of this file.';
+            statusEl.textContent = 'Not connected yet â€” paste your Apps Script Web App URL into APPS_SCRIPT_URL near the bottom of this file.';
             return;
         }
-        statusEl.textContent = 'Syncing…';
+        statusEl.textContent = 'Syncingâ€¦';
         try {
             const res = await fetch(APPS_SCRIPT_URL);
             if (!res.ok) throw new Error('HTTP ' + res.status);
