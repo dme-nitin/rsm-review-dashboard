@@ -98,16 +98,22 @@
         justify-content: center;
         align-items: center;
     }
-    .nav a {
+    .nav-btn {
         padding: 8px 14px;
         background: #2f3640;
         color: #fff;
+        border: none;
         text-decoration: none;
         border-radius: 5px;
         font-size: 14px;
+        cursor: pointer;
     }
-    .nav a:hover {
+    .nav-btn:hover {
         background: #40485a;
+    }
+    .nav-btn.active {
+        background: #d97757;
+        font-weight: bold;
     }
     .print-btn, .refresh-btn {
         padding: 8px 16px;
@@ -137,12 +143,13 @@
 <body>
 
 <div class="nav no-print">
-    <a href="#daya">Daya</a>
-    <a href="#vijay">Vijay</a>
-    <a href="#abhishek">Abhishek</a>
-    <a href="#tanmoy">Tanmoy</a>
-    <a href="#giridharan">Giridharan</a>
-    <a href="#consolidated">Consolidated</a>
+    <button class="nav-btn active" data-filter="all" onclick="setFilter('all')">All RSM</button>
+    <button class="nav-btn" data-filter="daya" onclick="setFilter('daya')">Daya</button>
+    <button class="nav-btn" data-filter="vijay" onclick="setFilter('vijay')">Vijay</button>
+    <button class="nav-btn" data-filter="abhishek" onclick="setFilter('abhishek')">Abhishek</button>
+    <button class="nav-btn" data-filter="tanmoy" onclick="setFilter('tanmoy')">Tanmoy</button>
+    <button class="nav-btn" data-filter="giridharan" onclick="setFilter('giridharan')">Giridharan</button>
+    <button class="nav-btn" data-filter="consolidated" onclick="setFilter('consolidated')">Consolidated</button>
     <button class="refresh-btn" onclick="syncDashboard()">Refresh Data</button>
     <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
 </div>
@@ -168,35 +175,35 @@
             <th>Achievement % Week</th>
             <th>Achievement % Month</th>
         </tr>
-        <tr><td>Unique customers visited this week</td>
-            <td contenteditable="true" data-rsm="Daya" data-metric="customersVisited" data-role="targetWeek"></td>
+        <tr><td>Unique customers visited</td>
+            <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="customersVisited" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="customersVisited" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Daya" data-metric="customersVisited" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="customersVisited" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="customersVisited" data-period="month"></td>
             <td class="calc" data-rsm="Daya" data-metric="customersVisited" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Daya" data-metric="customersVisited" data-role="pctMonth"></td></tr>
-        <tr><td>Demos conducted this week</td>
-            <td contenteditable="true" data-rsm="Daya" data-metric="demos" data-role="targetWeek"></td>
+        <tr><td>Demos conducted</td>
+            <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="demos" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="demos" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Daya" data-metric="demos" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="demos" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="demos" data-period="month"></td>
             <td class="calc" data-rsm="Daya" data-metric="demos" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Daya" data-metric="demos" data-role="pctMonth"></td></tr>
-        <tr><td>Quotations submitted this week</td>
-            <td contenteditable="true" data-rsm="Daya" data-metric="quotations" data-role="targetWeek"></td>
+        <tr><td>Quotations submitted</td>
+            <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="quotations" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="quotations" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Daya" data-metric="quotations" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="quotations" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="quotations" data-period="month"></td>
             <td class="calc" data-rsm="Daya" data-metric="quotations" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Daya" data-metric="quotations" data-role="pctMonth"></td></tr>
-        <tr><td>PO received this week</td>
+        <tr><td>PO received</td>
             <td contenteditable="true" data-rsm="Daya" data-metric="poReceived" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="poReceived" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Daya" data-metric="poReceived" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="poReceived" data-period="month"></td>
             <td class="calc" data-rsm="Daya" data-metric="poReceived" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Daya" data-metric="poReceived" data-role="pctMonth"></td></tr>
-        <tr><td>Invoicing this week</td>
+        <tr><td>Invoicing</td>
             <td contenteditable="true" data-rsm="Daya" data-metric="invoicing" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Daya" data-metric="invoicing" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Daya" data-metric="invoicing" data-role="targetMonth"></td>
@@ -269,35 +276,35 @@
             <th>Achievement % Week</th>
             <th>Achievement % Month</th>
         </tr>
-        <tr><td>Unique customers visited this week</td>
-            <td contenteditable="true" data-rsm="Vijay" data-metric="customersVisited" data-role="targetWeek"></td>
+        <tr><td>Unique customers visited</td>
+            <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="customersVisited" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="customersVisited" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Vijay" data-metric="customersVisited" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="customersVisited" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="customersVisited" data-period="month"></td>
             <td class="calc" data-rsm="Vijay" data-metric="customersVisited" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Vijay" data-metric="customersVisited" data-role="pctMonth"></td></tr>
-        <tr><td>Demos conducted this week</td>
-            <td contenteditable="true" data-rsm="Vijay" data-metric="demos" data-role="targetWeek"></td>
+        <tr><td>Demos conducted</td>
+            <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="demos" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="demos" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Vijay" data-metric="demos" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="demos" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="demos" data-period="month"></td>
             <td class="calc" data-rsm="Vijay" data-metric="demos" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Vijay" data-metric="demos" data-role="pctMonth"></td></tr>
-        <tr><td>Quotations submitted this week</td>
-            <td contenteditable="true" data-rsm="Vijay" data-metric="quotations" data-role="targetWeek"></td>
+        <tr><td>Quotations submitted</td>
+            <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="quotations" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="quotations" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Vijay" data-metric="quotations" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="quotations" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="quotations" data-period="month"></td>
             <td class="calc" data-rsm="Vijay" data-metric="quotations" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Vijay" data-metric="quotations" data-role="pctMonth"></td></tr>
-        <tr><td>PO received this week</td>
+        <tr><td>PO received</td>
             <td contenteditable="true" data-rsm="Vijay" data-metric="poReceived" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="poReceived" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Vijay" data-metric="poReceived" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="poReceived" data-period="month"></td>
             <td class="calc" data-rsm="Vijay" data-metric="poReceived" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Vijay" data-metric="poReceived" data-role="pctMonth"></td></tr>
-        <tr><td>Invoicing this week</td>
+        <tr><td>Invoicing</td>
             <td contenteditable="true" data-rsm="Vijay" data-metric="invoicing" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Vijay" data-metric="invoicing" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Vijay" data-metric="invoicing" data-role="targetMonth"></td>
@@ -370,35 +377,35 @@
             <th>Achievement % Week</th>
             <th>Achievement % Month</th>
         </tr>
-        <tr><td>Unique customers visited this week</td>
-            <td contenteditable="true" data-rsm="Abhishek" data-metric="customersVisited" data-role="targetWeek"></td>
+        <tr><td>Unique customers visited</td>
+            <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="customersVisited" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="customersVisited" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Abhishek" data-metric="customersVisited" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="customersVisited" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="customersVisited" data-period="month"></td>
             <td class="calc" data-rsm="Abhishek" data-metric="customersVisited" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Abhishek" data-metric="customersVisited" data-role="pctMonth"></td></tr>
-        <tr><td>Demos conducted this week</td>
-            <td contenteditable="true" data-rsm="Abhishek" data-metric="demos" data-role="targetWeek"></td>
+        <tr><td>Demos conducted</td>
+            <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="demos" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="demos" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Abhishek" data-metric="demos" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="demos" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="demos" data-period="month"></td>
             <td class="calc" data-rsm="Abhishek" data-metric="demos" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Abhishek" data-metric="demos" data-role="pctMonth"></td></tr>
-        <tr><td>Quotations submitted this week</td>
-            <td contenteditable="true" data-rsm="Abhishek" data-metric="quotations" data-role="targetWeek"></td>
+        <tr><td>Quotations submitted</td>
+            <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="quotations" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="quotations" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Abhishek" data-metric="quotations" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="quotations" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="quotations" data-period="month"></td>
             <td class="calc" data-rsm="Abhishek" data-metric="quotations" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Abhishek" data-metric="quotations" data-role="pctMonth"></td></tr>
-        <tr><td>PO received this week</td>
+        <tr><td>PO received</td>
             <td contenteditable="true" data-rsm="Abhishek" data-metric="poReceived" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="poReceived" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Abhishek" data-metric="poReceived" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="poReceived" data-period="month"></td>
             <td class="calc" data-rsm="Abhishek" data-metric="poReceived" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Abhishek" data-metric="poReceived" data-role="pctMonth"></td></tr>
-        <tr><td>Invoicing this week</td>
+        <tr><td>Invoicing</td>
             <td contenteditable="true" data-rsm="Abhishek" data-metric="invoicing" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Abhishek" data-metric="invoicing" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Abhishek" data-metric="invoicing" data-role="targetMonth"></td>
@@ -471,35 +478,35 @@
             <th>Achievement % Week</th>
             <th>Achievement % Month</th>
         </tr>
-        <tr><td>Unique customers visited this week</td>
-            <td contenteditable="true" data-rsm="Tanmoy" data-metric="customersVisited" data-role="targetWeek"></td>
+        <tr><td>Unique customers visited</td>
+            <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="customersVisited" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="customersVisited" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Tanmoy" data-metric="customersVisited" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="customersVisited" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="customersVisited" data-period="month"></td>
             <td class="calc" data-rsm="Tanmoy" data-metric="customersVisited" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Tanmoy" data-metric="customersVisited" data-role="pctMonth"></td></tr>
-        <tr><td>Demos conducted this week</td>
-            <td contenteditable="true" data-rsm="Tanmoy" data-metric="demos" data-role="targetWeek"></td>
+        <tr><td>Demos conducted</td>
+            <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="demos" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="demos" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Tanmoy" data-metric="demos" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="demos" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="demos" data-period="month"></td>
             <td class="calc" data-rsm="Tanmoy" data-metric="demos" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Tanmoy" data-metric="demos" data-role="pctMonth"></td></tr>
-        <tr><td>Quotations submitted this week</td>
-            <td contenteditable="true" data-rsm="Tanmoy" data-metric="quotations" data-role="targetWeek"></td>
+        <tr><td>Quotations submitted</td>
+            <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="quotations" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="quotations" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Tanmoy" data-metric="quotations" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="quotations" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="quotations" data-period="month"></td>
             <td class="calc" data-rsm="Tanmoy" data-metric="quotations" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Tanmoy" data-metric="quotations" data-role="pctMonth"></td></tr>
-        <tr><td>PO received this week</td>
+        <tr><td>PO received</td>
             <td contenteditable="true" data-rsm="Tanmoy" data-metric="poReceived" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="poReceived" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Tanmoy" data-metric="poReceived" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="poReceived" data-period="month"></td>
             <td class="calc" data-rsm="Tanmoy" data-metric="poReceived" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Tanmoy" data-metric="poReceived" data-role="pctMonth"></td></tr>
-        <tr><td>Invoicing this week</td>
+        <tr><td>Invoicing</td>
             <td contenteditable="true" data-rsm="Tanmoy" data-metric="invoicing" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Tanmoy" data-metric="invoicing" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Tanmoy" data-metric="invoicing" data-role="targetMonth"></td>
@@ -572,35 +579,35 @@
             <th>Achievement % Week</th>
             <th>Achievement % Month</th>
         </tr>
-        <tr><td>Unique customers visited this week</td>
-            <td contenteditable="true" data-rsm="Giridharan" data-metric="customersVisited" data-role="targetWeek"></td>
+        <tr><td>Unique customers visited</td>
+            <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="customersVisited" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="customersVisited" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Giridharan" data-metric="customersVisited" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="customersVisited" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="customersVisited" data-period="month"></td>
             <td class="calc" data-rsm="Giridharan" data-metric="customersVisited" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Giridharan" data-metric="customersVisited" data-role="pctMonth"></td></tr>
-        <tr><td>Demos conducted this week</td>
-            <td contenteditable="true" data-rsm="Giridharan" data-metric="demos" data-role="targetWeek"></td>
+        <tr><td>Demos conducted</td>
+            <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="demos" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="demos" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Giridharan" data-metric="demos" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="demos" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="demos" data-period="month"></td>
             <td class="calc" data-rsm="Giridharan" data-metric="demos" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Giridharan" data-metric="demos" data-role="pctMonth"></td></tr>
-        <tr><td>Quotations submitted this week</td>
-            <td contenteditable="true" data-rsm="Giridharan" data-metric="quotations" data-role="targetWeek"></td>
+        <tr><td>Quotations submitted</td>
+            <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="quotations" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="quotations" data-period="thisWeek"></td>
-            <td contenteditable="true" data-rsm="Giridharan" data-metric="quotations" data-role="targetMonth"></td>
+            <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="quotations" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="quotations" data-period="month"></td>
             <td class="calc" data-rsm="Giridharan" data-metric="quotations" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Giridharan" data-metric="quotations" data-role="pctMonth"></td></tr>
-        <tr><td>PO received this week</td>
+        <tr><td>PO received</td>
             <td contenteditable="true" data-rsm="Giridharan" data-metric="poReceived" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="poReceived" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Giridharan" data-metric="poReceived" data-role="targetMonth"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="poReceived" data-period="month"></td>
             <td class="calc" data-rsm="Giridharan" data-metric="poReceived" data-role="pctWeek"></td>
             <td class="calc" data-rsm="Giridharan" data-metric="poReceived" data-role="pctMonth"></td></tr>
-        <tr><td>Invoicing this week</td>
+        <tr><td>Invoicing</td>
             <td contenteditable="true" data-rsm="Giridharan" data-metric="invoicing" data-role="targetWeek"></td>
             <td class="synced" contenteditable="true" data-rsm="Giridharan" data-metric="invoicing" data-period="thisWeek"></td>
             <td contenteditable="true" data-rsm="Giridharan" data-metric="invoicing" data-role="targetMonth"></td>
@@ -790,6 +797,28 @@
         });
     }
 
+    const SECTION_IDS = ['daya', 'vijay', 'abhishek', 'tanmoy', 'giridharan', 'consolidated'];
+
+    function setFilter(filter) {
+        document.querySelectorAll('.nav-btn[data-filter]').forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.filter === filter);
+        });
+
+        SECTION_IDS.forEach(function (id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let show;
+            if (filter === 'all') {
+                show = (id !== 'consolidated');
+            } else if (filter === 'consolidated') {
+                show = (id === 'consolidated');
+            } else {
+                show = (id === filter);
+            }
+            el.style.display = show ? '' : 'none';
+        });
+    }
+
     function formatRs(value) {
         if (value === undefined || value === null || isNaN(value)) return '';
         return 'Rs ' + Number(value).toLocaleString('en-IN', { maximumFractionDigits: 0 });
@@ -880,6 +909,16 @@
             setCell(name, 'targetYTD', 'value', r.targetYTD !== undefined ? r.targetYTD : '');
             setCell(name, 'achievementYTD', 'value', r.achievementYTD !== undefined ? r.achievementYTD : '');
 
+            if (r.targets) {
+                Object.keys(r.targets).forEach(function (metric) {
+                    const t = r.targets[metric];
+                    const weekEl = document.querySelector('[data-rsm="' + name + '"][data-metric="' + metric + '"][data-role="targetWeek"]');
+                    const monthEl = document.querySelector('[data-rsm="' + name + '"][data-metric="' + metric + '"][data-role="targetMonth"]');
+                    if (weekEl) weekEl.textContent = t.week;
+                    if (monthEl) monthEl.textContent = t.month;
+                });
+            }
+
             OPERATIONAL_METRICS.forEach(function (m) { recalcRow(name, m); });
 
             const totalValueEl = document.querySelector('[data-total-rsm="' + name + '"]');
@@ -924,7 +963,10 @@
         }
     }
 
-    window.addEventListener('DOMContentLoaded', syncDashboard);
+    window.addEventListener('DOMContentLoaded', function () {
+        setFilter('all');
+        syncDashboard();
+    });
 </script>
 
 </body>
