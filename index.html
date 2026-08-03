@@ -136,7 +136,7 @@
     <div class="sub">Global Medicare | Global Appliances Pvt. Ltd.</div>
 
     <p><b>RSM:</b> Daya &nbsp;&nbsp;
-    <b>Week Ending:</b> <span class="input-line" contenteditable="true"></span></p>
+    <b>Week Ending:</b> <span class="input-line week-range" contenteditable="true"></span></p>
 
     <p><b>Territory:</b> Delhi NCR, Haryana, UP, Uttarakhand</p>
 
@@ -192,7 +192,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC — leads ≥ Rs 10L)</h3>
 
     <table>
         <tr>
@@ -223,7 +223,7 @@
     <div class="sub">Global Medicare | Global Appliances Pvt. Ltd.</div>
 
     <p><b>RSM:</b> Vijay &nbsp;&nbsp;
-    <b>Week Ending:</b> <span class="input-line" contenteditable="true"></span></p>
+    <b>Week Ending:</b> <span class="input-line week-range" contenteditable="true"></span></p>
 
     <p><b>Territory:</b> Punjab, J&amp;K, Rajasthan</p>
 
@@ -279,7 +279,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC — leads ≥ Rs 10L)</h3>
 
     <table>
         <tr>
@@ -310,7 +310,7 @@
     <div class="sub">Global Medicare | Global Appliances Pvt. Ltd.</div>
 
     <p><b>RSM:</b> Abhishek &nbsp;&nbsp;
-    <b>Week Ending:</b> <span class="input-line" contenteditable="true"></span></p>
+    <b>Week Ending:</b> <span class="input-line week-range" contenteditable="true"></span></p>
 
     <p><b>Territory:</b> Maharashtra, Gujarat, MP, Chhattisgarh</p>
 
@@ -366,7 +366,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC — leads ≥ Rs 10L)</h3>
 
     <table>
         <tr>
@@ -397,7 +397,7 @@
     <div class="sub">Global Medicare | Global Appliances Pvt. Ltd.</div>
 
     <p><b>RSM:</b> Tanmoy &nbsp;&nbsp;
-    <b>Week Ending:</b> <span class="input-line" contenteditable="true"></span></p>
+    <b>Week Ending:</b> <span class="input-line week-range" contenteditable="true"></span></p>
 
     <p><b>Territory:</b> West Bengal, North East, Odisha, Bihar, Jharkhand</p>
 
@@ -453,7 +453,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC — leads ≥ Rs 10L)</h3>
 
     <table>
         <tr>
@@ -484,7 +484,7 @@
     <div class="sub">Global Medicare | Global Appliances Pvt. Ltd.</div>
 
     <p><b>RSM:</b> Giridharan &nbsp;&nbsp;
-    <b>Week Ending:</b> <span class="input-line" contenteditable="true"></span></p>
+    <b>Week Ending:</b> <span class="input-line week-range" contenteditable="true"></span></p>
 
     <p><b>Territory:</b> South India (5 states)</p>
 
@@ -540,7 +540,7 @@
             <td contenteditable="true"></td></tr>
     </table>
 
-    <h3>High-Value Pipeline (HVC — leads = Rs 10L)</h3>
+    <h3>High-Value Pipeline (HVC — leads ≥ Rs 10L)</h3>
 
     <table>
         <tr>
@@ -570,7 +570,7 @@
 <div class="container" id="consolidated">
     <h2>CONSOLIDATED ROLLUP — ALL TERRITORIES</h2>
 
-    <p><b>Week Ending:</b> <span class="input-line" contenteditable="true"></span></p>
+    <p><b>Week Ending:</b> <span class="input-line week-range" contenteditable="true"></span></p>
 
     <table>
         <tr>
@@ -681,7 +681,7 @@
         if (!tbody) return;
         tbody.innerHTML = '';
         if (!entries || entries.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">No entries = Rs 10L this month</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5">No entries ≥ Rs 10L this month</td></tr>';
             return;
         }
         entries.forEach(function (e, i) {
@@ -749,6 +749,10 @@
         });
         setCell('Total', 'expectedSaleMonth', 'month', formatRs(expectedSaleMonthTotal));
         if (pctCount) setCell('Total', 'targetAchievementPct', 'achievementPct', Math.round(pctSum / pctCount * 10) / 10 + '% (avg)');
+
+        document.querySelectorAll('.week-range').forEach(function (el) {
+            el.textContent = data.ranges.lastWeekLabel;
+        });
 
         document.getElementById('syncStatus').textContent =
             'Last synced ' + new Date(data.generatedAt).toLocaleString() +
