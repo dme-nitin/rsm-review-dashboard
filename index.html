@@ -151,7 +151,7 @@
     <button class="nav-btn" data-filter="giridharan" onclick="setFilter('giridharan')">Giridharan</button>
     <button class="nav-btn" data-filter="consolidated" onclick="setFilter('consolidated')">Consolidated</button>
     <button class="refresh-btn" onclick="syncDashboard()">Refresh Data</button>
-    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    <button class="print-btn" onclick="emailScorecard()">Email / Save as PDF</button>
 </div>
 <div class="no-print" id="syncStatus">Loading…</div>
 
@@ -706,7 +706,7 @@
         if (!tbody) return;
         tbody.innerHTML = '';
         if (!entries || entries.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">No entries = Rs 10L this month</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5">No entries ≥ Rs 10L this month</td></tr>';
             return;
         }
         entries.forEach(function (e, i) {
@@ -897,6 +897,40 @@
             'Last synced ' + new Date(data.generatedAt).toLocaleString() +
             ' — This week: ' + data.ranges.thisWeekStart + ' to ' + data.ranges.thisWeekEnd +
             ' | Last week: ' + data.ranges.lastWeekStart + ' to ' + data.ranges.lastWeekEnd;
+    }
+
+    async function emailScorecard() {
+        const statusEl = document.getElementById('syncStatus');
+        if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') !== -1) {
+            statusEl.textContent = 'Not connected yet — paste your Apps Script Web App URL into APPS_SCRIPT_URL near the bottom of this file.';
+            return;
+        }
+
+        const activeBtn = document.querySelector('.nav-btn.active');
+        const filter = activeBtn ? activeBtn.dataset.filter : 'all'; // 'all' | 'daya' | ... | 'consolidated'
+
+        statusEl.textContent = 'Generating PDF, saving to Drive, and emailing — this can take a few seconds…';
+
+        try {
+            const res = await fetch(APPS_SCRIPT_URL + '?action=sendScorecard&rsm=' + encodeURIComponent(filter));
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            const results = data.results || [];
+
+            if (results.length === 0) {
+                statusEl.textContent = 'No results returned.';
+                return;
+            }
+
+            const allSucceeded = results.every(function (r) { return r.success; });
+            const summary = results.map(function (r) { return r.message; }).join(' | ');
+
+            statusEl.textContent = allSucceeded
+                ? (results.length === 1 ? results[0].message : 'Scorecard PDFs generated, saved to SCORECARD folder, and emailed successfully for: ' + results.filter(function (r) { return r.success; }).map(function (r) { return r.rsm; }).join(', ') + '.')
+                : summary;
+        } catch (err) {
+            statusEl.textContent = 'Scorecard generation failed: ' + err.message;
+        }
     }
 
     async function syncDashboard() {
