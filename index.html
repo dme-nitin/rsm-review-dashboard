@@ -89,6 +89,38 @@
         border: 1px solid #ccc;
         padding: 8px;
     }
+    .exec-card {
+        max-width: 1100px;
+        margin: 0 auto 24px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .exec-card .meta {
+        margin-bottom: 4px;
+    }
+    .exec-card .exec-name {
+        font-size: 1.3em;
+        font-weight: bold;
+        margin: 10px 0 14px;
+    }
+    td.calc-exec {
+        background: #f3fbf0;
+        font-weight: bold;
+    }
+    td.manual-exec {
+        color: #999;
+        font-style: italic;
+    }
+    td.merged-value-cell {
+        text-align: center;
+        vertical-align: middle;
+        font-size: 1.25em;
+        font-weight: bold;
+        color: #2f3640;
+        background: #eef6ff;
+    }
     .nav {
         max-width: 1100px;
         margin: 0 auto 10px;
@@ -115,6 +147,13 @@
         background: #d97757;
         font-weight: bold;
     }
+    .nav-link {
+        background: #6c5ce7;
+        display: inline-block;
+    }
+    .nav-link:hover {
+        background: #7f70eb;
+    }
     .print-btn, .refresh-btn {
         padding: 8px 16px;
         border: none;
@@ -125,6 +164,18 @@
     }
     .print-btn { background: #d97757; }
     .refresh-btn { background: #2e8b57; }
+    .exec-email-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #fff;
+        background: #8e44ad;
+    }
+    .exec-email-btn:hover {
+        background: #a15cc4;
+    }
     #syncStatus {
         max-width: 1100px;
         margin: 0 auto 20px;
@@ -149,9 +200,11 @@
     <button class="nav-btn" data-filter="abhishek" onclick="setFilter('abhishek')">Abhishek</button>
     <button class="nav-btn" data-filter="tanmoy" onclick="setFilter('tanmoy')">Tanmoy</button>
     <button class="nav-btn" data-filter="giridharan" onclick="setFilter('giridharan')">Giridharan</button>
+    <button class="nav-btn nav-link" data-filter="salesExecutives" onclick="setFilter('salesExecutives')">Sales Executives</button>
     <button class="nav-btn" data-filter="consolidated" onclick="setFilter('consolidated')">Consolidated</button>
     <button class="refresh-btn" onclick="syncDashboard()">Refresh Data</button>
     <button class="print-btn" onclick="emailScorecard()">Email / Save as PDF</button>
+    <button class="exec-email-btn" onclick="sendSalesExecutiveEmails()">Send Sales Executive Report</button>
 </div>
 <div class="no-print" id="syncStatus">Loading…</div>
 
@@ -591,9 +644,18 @@
 </div>
 
 
+<!-- SALES EXECUTIVES -->
+<div id="salesExecutives">
+    <div class="page-header" style="max-width:1100px;margin:0 auto 20px;text-align:center;">
+        <h2>SALES EXECUTIVE REVIEW</h2>
+        <div class="sub">Global Medicare</div>
+    </div>
+    <div id="execCardsContainer"></div>
+</div>
+
 <!-- CONSOLIDATED PAGE -->
 <div class="container" id="consolidated">
-    <h2>CONSOLIDATED ROLLUP — ALL TERRITORIES</h2>
+    <h2>CONSOLIDATED ROLLUP - ALL TERRITORIES</h2>
 
     <p><b>Week Ending:</b> <span class="input-line week-range" contenteditable="true"></span></p>
 
@@ -727,7 +789,7 @@
         });
     }
 
-    const SECTION_IDS = ['daya', 'vijay', 'abhishek', 'tanmoy', 'giridharan', 'consolidated'];
+    const SECTION_IDS = ['daya', 'vijay', 'abhishek', 'tanmoy', 'giridharan', 'consolidated', 'salesExecutives'];
 
     function setFilter(filter) {
         document.querySelectorAll('.nav-btn[data-filter]').forEach(function (btn) {
@@ -739,7 +801,7 @@
             if (!el) return;
             let show;
             if (filter === 'all') {
-                show = (id !== 'consolidated');
+                show = (id !== 'consolidated' && id !== 'salesExecutives');
             } else if (filter === 'consolidated') {
                 show = (id === 'consolidated');
             } else {
@@ -827,7 +889,7 @@
                 // no Target/Achievement rows found at all for this RSM
                 setCell(name, 'targetAchievementPct', 'achievementPct', 'No data');
             } else if (r.targetAchievementPct === -1) {
-                // Target is 0 but Achievement is non-zero — can't divide by zero
+                // Target is 0 but Achievement is non-zero - can't divide by zero
                 setCell(name, 'targetAchievementPct', 'achievementPct', 'Target = 0');
             } else {
                 setCell(name, 'targetAchievementPct', 'achievementPct', r.targetAchievementPct + '%');
@@ -860,7 +922,7 @@
 
             if (r.invoicingAmount) {
                 // Achieved (this week) and Achieved Till Date now come from the real,
-                // Capex-filtered (white background only) EQ:EX sum — not the flat
+                // Capex-filtered (white background only) EQ:EX sum - not the flat
                 // YTD figure.
                 ['poReceived', 'invoicing'].forEach(function (metric) {
                     document.querySelectorAll('[data-rsm="' + name + '"][data-metric="' + metric + '"][data-period="thisWeek"]').forEach(function (el) {
@@ -889,27 +951,66 @@
         setCell('Total', 'expectedSaleMonth', 'month', formatRs(expectedSaleMonthTotal));
         if (pctCount) setCell('Total', 'targetAchievementPct', 'achievementPct', Math.round(pctSum / pctCount * 10) / 10 + '% (avg)');
 
+        // Fallback: if the deployed backend is an older version that doesn't
+        // send thisWeekLabel yet, compute it live in the browser instead of
+        // ever showing "undefined".
+        const weekLabel = (data && data.ranges && data.ranges.thisWeekLabel) || computeCurrentWeekLabelClientSide();
+
         document.querySelectorAll('.week-range').forEach(function (el) {
-            el.textContent = data.ranges.lastWeekLabel;
+            el.textContent = weekLabel;
         });
 
         document.getElementById('syncStatus').textContent =
             'Last synced ' + new Date(data.generatedAt).toLocaleString() +
-            ' — This week: ' + data.ranges.thisWeekStart + ' to ' + data.ranges.thisWeekEnd +
-            ' | Last week: ' + data.ranges.lastWeekStart + ' to ' + data.ranges.lastWeekEnd;
+            ' - Week Ending: ' + weekLabel;
+    }
+
+    async function sendSalesExecutiveEmails() {
+        const statusEl = document.getElementById('syncStatus');
+        if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') !== -1) {
+            statusEl.textContent = 'Not connected yet - paste your Apps Script Web App URL into APPS_SCRIPT_URL near the bottom of this file.';
+            return;
+        }
+
+        statusEl.textContent = 'Sending individual Sales Executive emails - this can take a little while for all 23...';
+
+        try {
+            const res = await fetch(APPS_SCRIPT_URL + '?action=sendSalesExecutiveEmails');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            const results = data.results || [];
+
+            if (results.length === 0) {
+                statusEl.textContent = 'No results returned.';
+                return;
+            }
+
+            const successCount = results.filter(function (r) { return r.success; }).length;
+            const failed = results.filter(function (r) { return !r.success; });
+
+            statusEl.textContent = successCount + ' of ' + results.length + ' Sales Executive emails sent successfully.' +
+                (failed.length > 0 ? ' Failed: ' + failed.map(function (r) { return r.message; }).join(' | ') : '');
+        } catch (err) {
+            statusEl.textContent = 'Sending Sales Executive emails failed: ' + err.message;
+        }
     }
 
     async function emailScorecard() {
         const statusEl = document.getElementById('syncStatus');
         if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') !== -1) {
-            statusEl.textContent = 'Not connected yet — paste your Apps Script Web App URL into APPS_SCRIPT_URL near the bottom of this file.';
+            statusEl.textContent = 'Not connected yet - paste your Apps Script Web App URL into APPS_SCRIPT_URL near the bottom of this file.';
             return;
         }
 
         const activeBtn = document.querySelector('.nav-btn.active');
         const filter = activeBtn ? activeBtn.dataset.filter : 'all'; // 'all' | 'daya' | ... | 'consolidated'
 
-        statusEl.textContent = 'Generating PDF, saving to Drive, and emailing — this can take a few seconds…';
+        if (filter === 'salesExecutives') {
+            statusEl.textContent = 'Email / Save as PDF isn\'t available on the Sales Executives view - use the "Send Sales Executive Report" button instead, or switch to a specific RSM / All RSM / Consolidated first.';
+            return;
+        }
+
+        statusEl.textContent = 'Generating PDF, saving to Drive, and emailing - this can take a few seconds…';
 
         try {
             const res = await fetch(APPS_SCRIPT_URL + '?action=sendScorecard&rsm=' + encodeURIComponent(filter));
@@ -933,10 +1034,153 @@
         }
     }
 
+    function pctTextExec(achieved, target) {
+        if (!target || target <= 0) return '';
+        return (Math.round((achieved / target) * 1000) / 10) + '%';
+    }
+
+    function buildExecRow(label, target, achieved) {
+        return '<tr><td>' + label + '</td>' +
+            '<td class="synced">' + target + '</td>' +
+            '<td class="synced">' + achieved + '</td>' +
+            '<td class="calc-exec">' + pctTextExec(achieved, target) + '</td></tr>';
+    }
+
+    function buildMergedValueRow(label, value) {
+        return '<tr><td>' + label + '</td><td colspan="3" class="merged-value-cell">' + value + '</td></tr>';
+    }
+
+    // Full display names, matching RSM_DISPLAY_NAMES in Code.gs — internal
+    // rsm key stays short ('Abhishek') everywhere else, only the displayed
+    // label uses the full name.
+    const RSM_DISPLAY_NAMES = {
+        Daya: 'Daya',
+        Vijay: 'Vijay',
+        Abhishek: 'Abhishek Tiwari',
+        Tanmoy: 'Tanmoy',
+        Giridharan: 'Giridharan'
+    };
+
+    function buildExecCard(ex, weekLabel) {
+        ex = ex || {};
+        const targets = ex.targets || {};
+        const cv = ex.customersVisited || {};
+        const dm = ex.demos || {};
+        const qt = ex.quotations || {};
+        const rsmLabel = RSM_DISPLAY_NAMES[ex.rsm] || ex.rsm || '—';
+
+        const rows =
+            buildExecRow('Unique customers visited', targets.customersVisited || 0, cv.thisWeek || 0) +
+            buildExecRow('Demos conducted', targets.demos || 0, dm.thisWeek || 0) +
+            buildExecRow('Quotations submitted', targets.quotations || 0, qt.thisWeek || 0) +
+            buildMergedValueRow('This Week Sale', formatRs(ex.thisWeekSale || 0)) +
+            buildMergedValueRow('Total entries done in CRM (This Week)', ex.crmEntries || 0);
+
+        return '<div class="exec-card">' +
+            '<div class="meta"><b>RSM -</b> ' + rsmLabel + '</div>' +
+            '<div class="meta"><b>Sales Executive -</b> ' + (ex.name || 'Unnamed') + '</div>' +
+            '<div class="meta"><b>Week Ending:</b> ' + (weekLabel || DUMMY_WEEK_LABEL) + '</div>' +
+            '<table style="margin-top:10px;"><tr><th>Parameter</th><th>Target of Week</th><th>Achieved</th><th>Achievement %</th></tr>' +
+            rows + '</table></div>';
+    }
+
+    // Fallback sample data - used ONLY if the live fetch fails or returns an
+    // unexpected shape, so the page always shows a working skeleton instead
+    // of a blank screen.
+    // Fallback dataset - used ONLY if the live fetch to Apps Script fails
+    // (e.g. not yet redeployed, network issue). Uses the REAL roster and a
+    // REAL computed date, so even this safety-net state never shows fake
+    // placeholder text - just zeroed metrics until live data loads.
+    const EXEC_NAME_LIST = [
+        'Amit', 'Shaneshwar', 'Arif', 'Harun', 'Palak', 'Ranjeet', 'Jugal', 'Rajinder',
+        'Muskan', 'Ashraf', 'Pankaj', 'Arun LKO',
+        'Hemchandan', 'Arun Chennai', 'Rajender Reddy',
+        'Sudipta', 'Dibakar', 'Rohit',
+        'Afzal', 'Tausif', 'Kamlesh', 'Gaurav', 'Akash Patel'
+    ];
+    const ZERO_METRICS = { customersVisited: { thisWeek: 0 }, demos: { thisWeek: 0 }, quotations: { thisWeek: 0 }, poReceived: { thisWeek: 0 }, targets: { customersVisited: 5, demos: 1, quotations: 1 } };
+    const DUMMY_EXECUTIVES = EXEC_NAME_LIST.map(function (name) {
+        return Object.assign({ name: name }, ZERO_METRICS);
+    });
+
+    // Client-side last-week (Monday-Saturday) calculation - same logic as the
+    // Apps Script backend - used only as a fallback if the live fetch fails,
+    // so the date is always real and correct, never a static placeholder.
+    // Client-side CURRENT week (Monday-Saturday) calculation - same logic as
+    // the Apps Script backend's thisWeekLabel - used only as a fallback if
+    // the live fetch fails, so the date is always real and correct.
+    function computeCurrentWeekLabelClientSide() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const day = today.getDay(); // 0=Sun..6=Sat
+        const mondayOffset = (day === 0) ? -6 : 1 - day;
+        const thisWeekStart = new Date(today);
+        thisWeekStart.setDate(today.getDate() + mondayOffset);
+        const thisWeekEnd = new Date(thisWeekStart);
+        thisWeekEnd.setDate(thisWeekStart.getDate() + 5);
+
+        const fmt = function (d) {
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            return dd + '/' + mm + '/' + d.getFullYear();
+        };
+        return fmt(thisWeekStart) + ' - ' + fmt(thisWeekEnd);
+    }
+    const DUMMY_WEEK_LABEL = computeCurrentWeekLabelClientSide();
+
+
+    function renderExecCards(executives, weekLabel, warningHtml) {
+        const container = document.getElementById('execCardsContainer');
+        if (!container) return;
+
+        // Defensive: always fall back to [] - this function can never throw
+        // on missing/malformed input.
+        const list = Array.isArray(executives) ? executives : [];
+
+        // Flat list, no RSM grouping - same order the data arrives in.
+        const cardsHtml = list.map(function (ex) { return buildExecCard(ex, weekLabel); }).join('');
+        container.innerHTML = (warningHtml || '') + cardsHtml;
+    }
+
+    async function loadSalesExecutives() {
+        try {
+            const res = await fetch(APPS_SCRIPT_URL + '?action=salesExecutives');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+
+            // Defensive: only trust the live payload if it actually has a
+            // non-empty executives array - otherwise fall back to the skeleton.
+            // Backend field is named "executives" - also accept "salesExecutives"
+            // defensively in case that ever changes, so a naming drift alone
+            // can never cause a blank/broken page.
+            const rawList = (data && (data.executives || data.salesExecutives)) || [];
+            const executives = Array.isArray(rawList) && rawList.length > 0 ? rawList : [];
+            const weekLabel = (data && data.ranges && data.ranges.thisWeekLabel) || DUMMY_WEEK_LABEL;
+
+            if (executives.length === 0) {
+                renderExecCards(
+                    DUMMY_EXECUTIVES,
+                    DUMMY_WEEK_LABEL,
+                    '<p style="max-width:1100px;margin:0 auto 16px;text-align:center;color:#c0392b;">Live Sales Executive data unavailable (empty response) - showing sample layout below.</p>'
+                );
+                return;
+            }
+
+            renderExecCards(executives, weekLabel, '');
+        } catch (err) {
+            // Never leave the screen blank - always fall back to the dummy skeleton.
+            renderExecCards(
+                DUMMY_EXECUTIVES,
+                DUMMY_WEEK_LABEL,
+                '<p style="max-width:1100px;margin:0 auto 16px;text-align:center;color:#c0392b;">Sales Executive data failed to load (' + err.message + ') - showing sample layout below.</p>'
+            );
+        }
+    }
+
     async function syncDashboard() {
         const statusEl = document.getElementById('syncStatus');
         if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') !== -1) {
-            statusEl.textContent = 'Not connected yet — paste your Apps Script Web App URL into APPS_SCRIPT_URL near the bottom of this file.';
+            statusEl.textContent = 'Not connected yet - paste your Apps Script Web App URL into APPS_SCRIPT_URL near the bottom of this file.';
             return;
         }
         statusEl.textContent = 'Syncing…';
@@ -945,6 +1189,7 @@
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
             applyData(data);
+            loadSalesExecutives();
         } catch (err) {
             statusEl.textContent = 'Sync failed: ' + err.message + ' (check the Apps Script deployment/access settings)';
         }
@@ -952,6 +1197,7 @@
 
     window.addEventListener('DOMContentLoaded', function () {
         setFilter('all');
+        renderExecCards(DUMMY_EXECUTIVES, DUMMY_WEEK_LABEL, '');
         syncDashboard();
     });
 </script>
