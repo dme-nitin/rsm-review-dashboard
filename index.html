@@ -911,11 +911,8 @@
                 });
             }
 
-            // Rupee Target of Week/Month belongs to Invoicing only. PO received is
-            // now a plain COUNT (rows with GF = "PO received"), shown through the
-            // generic count loop above, and has no rupee target.
             if (r.revenueTarget) {
-                ['invoicing'].forEach(function (metric) {
+                ['poReceived', 'invoicing'].forEach(function (metric) {
                     const weekEl = document.querySelector('[data-rsm="' + name + '"][data-metric="' + metric + '"][data-role="targetWeek"]');
                     const monthEl = document.querySelector('[data-rsm="' + name + '"][data-metric="' + metric + '"][data-role="targetMonth"]');
                     if (weekEl) weekEl.textContent = formatRs(r.revenueTarget.targetWeek);
@@ -924,9 +921,9 @@
             }
 
             if (r.invoicingAmount) {
-                // Invoicing's Achieved (this week) and Achieved Till Date come from the
-                // real, Capex-filtered (white background only) EQ:EX rupee sum.
-                ['invoicing'].forEach(function (metric) {
+                // Achieved (this week) and Achieved Till Date come from the real,
+                // Capex-filtered (white background only) EQ:EX rupee sum.
+                ['poReceived', 'invoicing'].forEach(function (metric) {
                     document.querySelectorAll('[data-rsm="' + name + '"][data-metric="' + metric + '"][data-period="thisWeek"]').forEach(function (el) {
                         el.textContent = formatRs(r.invoicingAmount.thisWeek);
                     });
