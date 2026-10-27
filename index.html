@@ -650,6 +650,11 @@
         <h2>SALES EXECUTIVE REVIEW</h2>
         <div class="sub">Global Medicare</div>
     </div>
+    <div style="max-width:1100px;margin:0 auto 14px;text-align:right;">
+        <span id="manualStatus" style="margin-right:10px;font-size:13px;color:#555;"></span>
+        <button id="manualEditBtn" onclick="startManualEdit()" style="padding:6px 16px;cursor:pointer;">Edit</button>
+        <button id="manualSaveBtn" onclick="saveManualDates()" style="padding:6px 16px;cursor:pointer;" disabled>Save</button>
+    </div>
     <div id="execCardsContainer"></div>
 </div>
 
@@ -1080,9 +1085,7 @@
             '<div class="meta"><b>Sales Executive -</b> ' + (ex.name || 'Unnamed') + '</div>' +
             '<div class="meta"><b>Week Ending:</b> ' + (weekLabel || DUMMY_WEEK_LABEL) + '</div>' +
             '<table style="margin-top:10px;"><tr><th>Parameter</th><th>Target of Week</th><th>Achieved</th><th>Achievement %</th></tr>' +
-            rows + '</table>' + buildExecPipeline(ex) +
-            '<div style="margin-top:10px;font-size:13px;"><b>Last Visited Date as per CRM:</b> ' +
-            (ex.lastVisit ? escapeHtml(ex.lastVisit.date) + (ex.lastVisit.hospital ? ' (' + escapeHtml(ex.lastVisit.hospital) + ')' : '') : '-') + '</div></div>';
+            rows + '</table>' + buildExecPipeline(ex) + '</div>';
     }
 
     function buildExecPipeline(ex) {
@@ -1090,10 +1093,12 @@
         const total = list.reduce(function (s, e) { return s + (Number(e.value) || 0); }, 0);
         const rows = list.map(function (e, i) {
             return '<tr><td>' + (i + 1) + '</td><td>' + escapeHtml(e.hospital) + '</td><td>' + escapeHtml(e.product) + '</td>' +
-                '<td>Rs ' + Number(e.value || 0).toLocaleString('en-IN') + '</td><td>' + escapeHtml(e.month) + '</td></tr>';
-        }).join('') || '<tr><td colspan="5">No entries</td></tr>';
+                '<td>Rs ' + Number(e.value || 0).toLocaleString('en-IN') + '</td><td>' + escapeHtml(e.month) + '</td>' +
+                '<td>' + escapeHtml(e.lastVisitCrm || '') + '</td>' +
+                '<td class="manual-cell" data-exec="' + escapeHtml(ex.name) + '" data-hosp="' + escapeHtml(e.hospital) + '" data-orig="' + escapeHtml(e.lastVisitManual || '') + '">' + escapeHtml(e.lastVisitManual || '') + '</td></tr>';
+        }).join('') || '<tr><td colspan="7">No entries</td></tr>';
         return '<div style="text-align:right;font-size:11px;margin-top:14px;">Total value - Rs ' + total.toLocaleString('en-IN') + '</div>' +
-            '<table style="margin-top:4px;"><tr><th>S.no</th><th>Hospital Name</th><th>Demo Product</th><th>Approx Expecting Sale</th><th>Expected sale month</th></tr>' +
+            '<table style="margin-top:4px;"><tr><th>S.no</th><th>Hospital Name</th><th>Demo Product</th><th>Approx Expecting Sale</th><th>Expected sale month</th><th>Last visited date as per CRM</th><th>Last visited date manual</th></tr>' +
             rows + '</table>';
     }
 
@@ -1153,6 +1158,60 @@
         // Flat list, no RSM grouping - same order the data arrives in.
         const cardsHtml = list.map(function (ex) { return buildExecCard(ex, weekLabel); }).join('');
         container.innerHTML = (warningHtml || '') + cardsHtml;
+    }
+
+    // ---- Manual "Last visited date" Edit / Save ----
+    function startManualEdit() {
+        document.querySelectorAll('td.manual-cell').forEach(function (td) {
+            td.contentEditable = 'true';
+            td.style.background = '#fffbe6';
+            td.style.outline = '1px dashed #bbb';
+        });
+        document.getElementById('manualSaveBtn').disabled = false;
+        document.getElementById('manualStatus').textContent = 'Edit mode - type dates in the last column, then click Save.';
+    }
+
+    async function saveManualDates() {
+        const statusEl = document.getElementById('manualStatus');
+        const changes = {};
+        document.querySelectorAll('td.manual-cell').forEach(function (td) {
+            const val = td.textContent.trim();
+            if (val !== (td.getAttribute('data-orig') || '')) {
+                const name = td.getAttribute('data-exec');
+                (changes[name] = changes[name] || []).push({ h: td.getAttribute('data-hosp'), d: val });
+            }
+        });
+        const names = Object.keys(changes);
+        if (names.length === 0) {
+            statusEl.textContent = 'No changes to save.';
+            stopManualEdit();
+            return;
+        }
+        statusEl.textContent = 'Saving...';
+        try {
+            for (const name of names) {
+                const res = await fetch(APPS_SCRIPT_URL + '?action=saveManualDates&exec=' + encodeURIComponent(name) +
+                    '&data=' + encodeURIComponent(JSON.stringify(changes[name])));
+                const out = await res.json();
+                if (!out.success) throw new Error(out.message || 'save failed');
+            }
+            document.querySelectorAll('td.manual-cell').forEach(function (td) {
+                td.setAttribute('data-orig', td.textContent.trim());
+            });
+            statusEl.textContent = 'Saved.';
+            stopManualEdit();
+        } catch (err) {
+            statusEl.textContent = 'Save failed: ' + err.message;
+        }
+    }
+
+    function stopManualEdit() {
+        document.querySelectorAll('td.manual-cell').forEach(function (td) {
+            td.contentEditable = 'false';
+            td.style.background = '';
+            td.style.outline = '';
+        });
+        document.getElementById('manualSaveBtn').disabled = true;
     }
 
     async function loadSalesExecutives() {
