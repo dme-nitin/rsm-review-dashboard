@@ -1080,7 +1080,19 @@
             '<div class="meta"><b>Sales Executive -</b> ' + (ex.name || 'Unnamed') + '</div>' +
             '<div class="meta"><b>Week Ending:</b> ' + (weekLabel || DUMMY_WEEK_LABEL) + '</div>' +
             '<table style="margin-top:10px;"><tr><th>Parameter</th><th>Target of Week</th><th>Achieved</th><th>Achievement %</th></tr>' +
-            rows + '</table></div>';
+            rows + '</table>' + buildExecPipeline(ex) + '</div>';
+    }
+
+    function buildExecPipeline(ex) {
+        const list = Array.isArray(ex.pipeline) ? ex.pipeline : [];
+        const total = list.reduce(function (s, e) { return s + (Number(e.value) || 0); }, 0);
+        const rows = list.map(function (e, i) {
+            return '<tr><td>' + (i + 1) + '</td><td>' + escapeHtml(e.hospital) + '</td><td>' + escapeHtml(e.product) + '</td>' +
+                '<td>Rs ' + Number(e.value || 0).toLocaleString('en-IN') + '</td><td>' + escapeHtml(e.month) + '</td></tr>';
+        }).join('') || '<tr><td colspan="5">No entries</td></tr>';
+        return '<div style="text-align:right;font-size:11px;margin-top:14px;">Total value - Rs ' + total.toLocaleString('en-IN') + '</div>' +
+            '<table style="margin-top:4px;"><tr><th>S.no</th><th>Hospital Name</th><th>Demo Product</th><th>Approx Expecting Sale</th><th>Expected sale month</th></tr>' +
+            rows + '</table>';
     }
 
     // Fallback sample data - used ONLY if the live fetch fails or returns an
