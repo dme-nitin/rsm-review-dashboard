@@ -1080,7 +1080,9 @@
             '<div class="meta"><b>Sales Executive -</b> ' + (ex.name || 'Unnamed') + '</div>' +
             '<div class="meta"><b>Week Ending:</b> ' + (weekLabel || DUMMY_WEEK_LABEL) + '</div>' +
             '<table style="margin-top:10px;"><tr><th>Parameter</th><th>Target of Week</th><th>Achieved</th><th>Achievement %</th></tr>' +
-            rows + '</table>' + buildExecPipeline(ex) + '</div>';
+            rows + '</table>' + buildExecPipeline(ex) +
+            '<div style="margin-top:10px;font-size:13px;"><b>Last Visited Date as per CRM:</b> ' +
+            (ex.lastVisit ? escapeHtml(ex.lastVisit.date) + (ex.lastVisit.hospital ? ' (' + escapeHtml(ex.lastVisit.hospital) + ')' : '') : '-') + '</div></div>';
     }
 
     function buildExecPipeline(ex) {
